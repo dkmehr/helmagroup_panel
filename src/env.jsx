@@ -1,16 +1,16 @@
 const env = {
   // siteApi:'http://localhost:6026/api',
-  siteApi: "https://admin.fahascrubs.com/api",
+  siteApi: "https://admin.helmagroups.com/api",
   // siteApi: "https://demofahaadmin.dkmehr.com/api",
 
   // siteApiUrl:'http://localhost:6026',
-  siteApiUrl: "https://admin.fahascrubs.com",
+  siteApiUrl: "https://admin.helmagroups.com",
   // siteApiUrl: "https://demofahaadmin.dkmehr.com",
-  cookieName: "faha-login",
+  cookieName: "helma-login",
   //cookieName:'panel-login',
   //cookieName:'mehr-login',
 
-  cookieLang: "faha-lang",
+  cookieLang: "helma-lang",
   //cookieLang:'panel-lang',
   //cookieLang:'mehr-lang',
 
