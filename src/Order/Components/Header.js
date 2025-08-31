@@ -1,0 +1,212 @@
+import { useEffect, useState } from "react";
+import env from "../../env";
+import ManageUser from "./ManageUser";
+import PostReq from "../../utils/PostReq";
+function OrderHeader(props) {
+  const [showDrop, setShowDrop] = useState(0);
+  const [showUsers, setShowUsers] = useState(0);
+  const [tab, setTab] = useState(0);
+  const tabItem = ["تهاتر", "پارک در نمایشگاه", "خرید"];
+  const updateGrid = (value) => {
+    props.setGrid(value);
+    var shopVar = JSON.parse(localStorage.getItem(env.shopExpert));
+    shopVar
+      ? localStorage.setItem(
+          env.shopExpert,
+          JSON.stringify({
+            ...shopVar,
+            grid: value,
+          })
+        )
+      : localStorage.setItem(
+          env.shopExpert,
+          JSON.stringify({
+            grid: value,
+          })
+        );
+  };
+  const [customers, setCustomers] = useState();
+  const findCustomer = async (search) => {
+    if (!search || search.length < 3) return;
+    const result = await PostReq({
+      method: "Post",
+      url: "/panel/faktor/customer-find",
+      body: { search: search },
+    });
+    setCustomers(result.customers);
+  };
+
+  const setPay = (customer) => {
+    if (customer.CustomerID) {
+      props.setPayValue(3);
+    } else {
+      props.setPayValue(4);
+    }
+  };
+  useEffect(() => {
+    if (props.newCustomer == "1") {
+      setTab(1);
+      setShowUsers(1);
+    }
+  }, []);
+  return (
+    <div className="nav-bar">
+      <p>سفارشات</p>
+      {props.user ? (
+        <div className="f-customer">
+          <div className="user-item">
+            <b>
+              {props.user.username}
+              {props.user.agent ? (
+                <></>
+              ) : (
+                <i className="fa-solid fa-check-circle" aria-hidden="true"></i>
+              )}
+
+              <small>
+                ({props.user.phone ? props.user.phone : props.user.mobile})
+              </small>
+            </b>
+            <small>{props.user.Address ? props.user.Address : "-"}</small>
+          </div>
+
+          <i
+            className="fa-solid fa-remove"
+            style={{ margin: "0", color: "#000" }}
+            onClick={() => (props.setUser(""), props.emptyCall(""))}
+          ></i>
+        </div>
+      ) : (
+        <div className="f-customer">
+          <input
+            type="search"
+            name=""
+            id="f-search"
+            placeholder="همه"
+            onChange={(e) => findCustomer(e.target.value)}
+            onFocus={() => setShowDrop(1)}
+            onBlur={() => setTimeout(() => setShowDrop(0), 200)}
+          />
+          <i
+            className="fa-solid fa-plus"
+            style={{ margin: "0", color: "#000" }}
+            onClick={() => setShowUsers(1)}
+          ></i>
+        </div>
+      )}
+      {/*<button onClick={() => gotToOpenOrders()} className="view-open-order">
+        سفارشهای باز
+      </button>*/}
+      {/* <div className="view-btn-wrapper">
+        <label
+          htmlFor="list-view"
+          className={props.grid ? "list-btn view-active" : "list-btn"}
+          onClick={() => updateGrid(1)}
+        >
+          <i className="fa-solid fa-list no-font"></i>
+        </label>
+        <input type="radio" name="view" id="list-view" />
+        <label
+          htmlFor="tile-view"
+          className={props.grid ? "tile-btn" : "tile-btn view-active"}
+          onClick={() => updateGrid(0)}
+        >
+          <i className="fa-solid fa-table no-font"></i>
+        </label>
+        <input type="radio" name="view" id="tile-view" />
+      </div> */}
+      {showDrop ? (
+        <div className="f-customer-dropdpwn">
+          {customers &&
+            customers.map((customer, i) => (
+              <div
+                // className={`menu-item${customer.canSubmit ? "" : " disabled"}`}
+                className="menu-item"
+                key={i}
+                // onClick={
+                //   customer.canSubmit
+                //     ? () => {
+                //         props.setUser(customer);
+                //         setPay(customer);
+                //       }
+                //     : undefined
+                // }
+                onClick={() => {
+                  props.setUser(customer);
+                  setPay(customer);
+                }}
+                // style={{
+                //   cursor: customer.canSubmit ? "pointer" : "not-allowed",
+                //   opacity: customer.canSubmit ? 1 : 0.5,
+                // }}
+              >
+                <p
+                  className="bu-name"
+                  style={{ fontSize: "1rem", fontWeight: "300" }}
+                >
+                  {customer.username}
+
+                  {customer.agent ? (
+                    <></>
+                  ) : (
+                    <i
+                      className="fa-solid fa-check-circle"
+                      aria-hidden="true"
+                    ></i>
+                  )}
+                </p>
+                <div className="info-holder col">
+                  {/* <span>
+                    <i
+                      className="fa-solid fa-credit-card no-font id-icon"
+                      aria-hidden="true"
+                    ></i>
+                    {customer.meliCode ? customer.meliCode : "........"}
+                  </span> */}
+                  <span>
+                    <i
+                      className="fa-solid fa-phone no-font id-icon"
+                      aria-hidden="true"
+                    ></i>
+                    {customer.phone ? customer.phone : "........"}
+                  </span>
+                  {/* <span>
+                    <i
+                      className="fa-solid fa-certificate no-font id-icon"
+                      aria-hidden="true"
+                    ></i>
+                    {customer.roleId ? customer.roleId : "........"}
+                  </span> */}
+                  {/* <span>
+                    <i
+                      className="fa-solid fa-location-arrow no-font id-icon"
+                      aria-hidden="true"
+                    ></i>
+                    {customer.PostalCode ? customer.PostalCode : "........"}
+                  </span> */}
+                </div>
+                <p className="bu-address">
+                  {customer.Address ? customer.Address : "-"}
+                </p>
+              </div>
+            ))}
+        </div>
+      ) : (
+        <></>
+      )}
+      {showUsers ? (
+        <ManageUser
+          tab={tab}
+          setTab={setTab}
+          show={showUsers}
+          close={() => setShowUsers(0)}
+          phoneUser={props.phoneUser}
+          setUser={props.setUser}
+        />
+      ) : (
+        <></>
+      )}
+    </div>
+  );
+}
+export default OrderHeader;
