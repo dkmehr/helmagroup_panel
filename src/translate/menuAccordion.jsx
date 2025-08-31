@@ -1,9 +1,9 @@
 const menutrans = {
   title: {
-    english: "Faha",
-    persian: "فاحا",
+    english: "Helma Group",
+    persian: "خرما قنطار طلایی",
     icon: "fa-eercast",
-    href: "https://fahascrubs.com/",
+    href: "https://helmagroup.com/",
   },
   menu: [
     {
